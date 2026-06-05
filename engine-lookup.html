@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Engine Code">
+<title>Engine Code Lookup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface2: #242424;
+    --border: #2e2e2e;
+    --accent: #f5c518;
+    --accent-dim: #c49d10;
+    --text: #f0f0f0;
+    --text-muted: #888;
+    --text-dim: #555;
+    --red: #e74c3c;
+    --green: #2ecc71;
+    --radius: 14px;
+  }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    overflow-x: hidden;
+  }
+
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 0 60px;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .header {
+    padding: 56px 24px 28px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+  .icon-wrap {
+    width: 40px; height: 40px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .icon-wrap svg { width: 22px; height: 22px; }
+  .app-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: var(--text);
+  }
+  .app-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* Main */
+  .main { padding: 24px 20px; }
+
+  /* Credentials section */
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+
+  .creds-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  input[type="text"], input[type="password"] {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 14px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    outline: none;
+    -webkit-appearance: none;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus, input[type="password"]:focus {
+    border-color: var(--accent);
+  }
+  input::placeholder { color: var(--text-dim); }
+
+  .save-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+    margin-top: -12px;
+  }
+  .save-row label {
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .save-row input[type="checkbox"] {
+    width: 16px; height: 16px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 0;
+  }
+
+  /* Plate input */
+  .plate-wrap { margin-bottom: 16px; }
+  .plate-input {
+    width: 100%;
+    background: var(--accent) !important;
+    border: 3px solid #000 !important;
+    border-radius: 10px !important;
+    padding: 18px 16px !important;
+    font-family: 'Barlow Condensed', sans-serif !important;
+    font-size: 34px !important;
+    font-weight: 800 !important;
+    letter-spacing: 6px !important;
+    text-align: center !important;
+    text-transform: uppercase !important;
+    color: #000 !important;
+    caret-color: #000;
+    -webkit-appearance: none;
+    outline: none !important;
+  }
+  .plate-input::placeholder {
+    color: #7a6200 !important;
+    letter-spacing: 4px !important;
+    font-size: 28px !important;
+  }
+
+  /* Button */
+  .btn {
+    width: 100%;
+    background: var(--accent);
+    border: none;
+    border-radius: 12px;
+    padding: 17px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #000;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.15s, transform 0.1s;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn:active { opacity: 0.85; transform: scale(0.98); }
+  .btn:disabled { opacity: 0.5; }
+
+  /* Spinner */
+  .spinner {
+    width: 20px; height: 20px;
+    border: 2.5px solid rgba(0,0,0,0.3);
+    border-top-color: #000;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: inline-block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Error */
+  .error {
+    background: rgba(231,76,60,0.12);
+    border: 1px solid rgba(231,76,60,0.3);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 14px;
+    color: #e74c3c;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  /* Result */
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 20px;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-hero {
+    background: var(--surface2);
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .result-plate {
+    display: inline-block;
+    background: var(--accent);
+    color: #000;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    padding: 5px 14px;
+    border-radius: 6px;
+    border: 2px solid #000;
+    margin-bottom: 14px;
+  }
+  .engine-label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .engine-code {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: 4px;
+    line-height: 1;
+    word-break: break-all;
+  }
+  .engine-code.not-found {
+    font-size: 28px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  .result-meta {
+    padding: 0;
+  }
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .meta-row:last-child { border-bottom: none; }
+  .meta-key { color: var(--text-muted); }
+  .meta-val { font-weight: 500; color: var(--text); text-align: right; max-width: 60%; }
+
+  /* History */
+  .history-section { margin-top: 32px; }
+  .history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .clear-btn {
+    font-size: 12px;
+    color: var(--text-dim);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 0;
+    font-family: 'Barlow', sans-serif;
+  }
+  .history-list { display: flex; flex-direction: column; gap: 8px; }
+  .history-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: border-color 0.15s;
+  }
+  .history-item:active { border-color: var(--accent); }
+  .history-plate {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--text);
+  }
+  .history-code {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+  .history-make { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .no-history { font-size: 14px; color: var(--text-dim); text-align: center; padding: 20px 0; }
+
+  /* API info */
+  .api-info {
+    background: rgba(245,197,24,0.07);
+    border: 1px solid rgba(245,197,24,0.2);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+  .api-info a { color: var(--accent); text-decoration: none; }
+  .api-info strong { color: var(--text); }
+
+  /* Add to home screen hint */
+  .home-hint {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .hint-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="header-top">
+      <div class="icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12h1m16 0h1M12 3v1m0 16v1"/>
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M6.3 6.3l.7.7m10 10 .7.7M17.7 6.3l-.7.7M6.3 17.7l.7-.7"/>
+        </svg>
+      </div>
+      <span class="app-title">Engine Code</span>
+    </div>
+    <div class="app-sub">UK reg → engine code lookup</div>
+  </div>
+
+  <div class="main">
+
+    <div class="home-hint">
+      <span class="hint-icon">📱</span>
+      <span>To add to iPhone home screen: tap <strong>Share</strong> in Safari, then <strong>"Add to Home Screen"</strong>. It'll work like an app.</span>
+    </div>
+
+    <div class="api-info">
+      <strong>Need API credentials?</strong> Register free at <a href="https://www.regcheck.org.uk" onclick="openLink && openLink('https://www.regcheck.org.uk')">regcheck.org.uk</a> — you get 10 free lookups to test. After that it's £0.15/lookup.
+    </div>
+
+    <div class="section-label">RegCheck credentials</div>
+    <div class="creds-grid">
+      <input type="text" id="username" placeholder="Username" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" />
+      <input type="password" id="password" placeholder="Password" autocomplete="off" />
+    </div>
+    <div class="save-row">
+      <label>
+        <input type="checkbox" id="saveCredsCheck" onchange="toggleSaveCreds()" />
+        Remember credentials on this device
+      </label>
+    </div>
+
+    <div class="section-label">Registration number</div>
+    <div class="plate-wrap">
+      <input class="plate-input" id="regInput" type="text" placeholder="AB12 CDE" maxlength="9"
+        autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+        oninput="formatReg(this)" onkeydown="if(event.key==='Enter') doLookup()" />
+    </div>
+
+    <button class="btn" id="lookupBtn" onclick="doLookup()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Find Engine Code
+    </button>
+
+    <div id="errorBox" class="error" style="display:none;"></div>
+    <div id="resultArea"></div>
+
+    <div class="history-section" id="historySection" style="display:none;">
+      <div class="history-header">
+        <div class="section-label" style="margin:0;">Recent lookups</div>
+        <button class="clear-btn" onclick="clearHistory()">Clear all</button>
+      </div>
+      <div class="history-list" id="historyList"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const HISTORY_KEY = 'engineLookupHistory';
+const CREDS_KEY = 'engineLookupCreds';
+
+function formatReg(el) {
+  el.value = el.value.toUpperCase().replace(/[^A-Z0-9 ]/g, '');
+}
+
+function loadSaved() {
+  try {
+    const saved = localStorage.getItem(CREDS_KEY);
+    if (saved) {
+      const c = JSON.parse(saved);
+      document.getElementById('username').value = c.u || '';
+      document.getElementById('password').value = c.p || '';
+      document.getElementById('saveCredsCheck').checked = true;
+    }
+  } catch(e) {}
+  renderHistory();
+}
+
+function toggleSaveCreds() {
+  const checked = document.getElementById('saveCredsCheck').checked;
+  if (!checked) {
+    try { localStorage.removeItem(CREDS_KEY); } catch(e) {}
+  }
+}
+
+function saveCreds(u, p) {
+  try {
+    if (document.getElementById('saveCredsCheck').checked) {
+      localStorage.setItem(CREDS_KEY, JSON.stringify({u, p}));
+    }
+  } catch(e) {}
+}
+
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch(e) { return []; }
+}
+
+function saveToHistory(reg, code, make, model, year) {
+  try {
+    let h = getHistory();
+    h = h.filter(x => x.reg !== reg);
+    h.unshift({ reg, code, make, model, year, ts: Date.now() });
+    if (h.length > 30) h = h.slice(0, 30);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(h));
+    renderHistory();
+  } catch(e) {}
+}
+
+function clearHistory() {
+  try { localStorage.removeItem(HISTORY_KEY); } catch(e) {}
+  renderHistory();
+}
+
+function renderHistory() {
+  const h = getHistory();
+  const section = document.getElementById('historySection');
+  const list = document.getElementById('historyList');
+  if (!h.length) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  list.innerHTML = h.map(item => `
+    <div class="history-item" onclick="loadFromHistory('${item.reg}')">
+      <div>
+        <div class="history-plate">${item.reg}</div>
+        <div class="history-make">${item.make || ''} ${item.model || ''} ${item.year ? '· ' + item.year : ''}</div>
+      </div>
+      <div class="history-code">${item.code || '—'}</div>
+    </div>
+  `).join('');
+}
+
+function loadFromHistory(reg) {
+  document.getElementById('regInput').value = reg;
+  doLookup();
+}
+
+function v(obj, ...keys) {
+  for (const k of keys) {
+    const val = obj[k];
+    if (val && typeof val === 'object' && val.CurrentTextValue) return val.CurrentTextValue;
+    if (val && typeof val === 'string' && val !== 'NULL' && val !== '') return val;
+  }
+  return '';
+}
+
+function renderResult(data, plate) {
+  const engineCode = v(data, 'EngineCode', 'engineCode');
+  const make = v(data, 'CarMake', 'MakeDescription');
+  const model = v(data, 'CarModel', 'ModelDescription', 'Description');
+  const year = v(data, 'RegistrationYear');
+  const fuel = v(data, 'FuelType');
+  const cc = v(data, 'EngineSize', 'engineCapacity');
+  const ccStr = cc && !isNaN(parseInt(cc)) ? parseInt(cc).toLocaleString() + ' cc' : (cc || '—');
+  const trans = v(data, 'Transmission');
+  const doors = v(data, 'NumberOfDoors');
+  const colour = v(data, 'Colour', 'colour');
+
+  saveToHistory(plate, engineCode || '—', make, model, year);
+
+  const metaRows = [
+    ['Make', make || '—'],
+    ['Model', model || '—'],
+    ['Year', year || '—'],
+    ['Fuel type', fuel || '—'],
+    ['Engine size', ccStr],
+    trans ? ['Transmission', trans] : null,
+    doors ? ['Doors', doors] : null,
+    colour ? ['Colour', colour] : null,
+  ].filter(Boolean);
+
+  document.getElementById('resultArea').innerHTML = `
+    <div class="result-card">
+      <div class="result-hero">
+        <div class="result-plate">${plate.toUpperCase()}</div>
+        <div class="engine-label">Engine code</div>
+        <div class="engine-code ${!engineCode ? 'not-found' : ''}">${engineCode || 'Not found'}</div>
+      </div>
+      <div class="result-meta">
+        ${metaRows.map(([k,v]) => `
+          <div class="meta-row">
+            <span class="meta-key">${k}</span>
+            <span class="meta-val">${v}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+async function doLookup() {
+  const raw = document.getElementById('regInput').value.trim().replace(/\s/g, '');
+  const user = document.getElementById('username').value.trim();
+  const pass = document.getElementById('password').value.trim();
+
+  document.getElementById('errorBox').style.display = 'none';
+  document.getElementById('resultArea').innerHTML = '';
+
+  if (!raw) { showError('Please enter a registration number.'); return; }
+  if (!user || !pass) { showError('Please enter your RegCheck username and password above.'); return; }
+
+  saveCreds(user, pass);
+
+  const btn = document.getElementById('lookupBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Looking up...';
+
+  try {
+    const WORKER_URL = 'https://enginelookup.alrawi-yousif2006.workers.dev/';
+    const url = `${WORKER_URL}?reg=${encodeURIComponent(raw)}&user=${encodeURIComponent(user)}`;
+    const resp = await fetch(url);
+    const text = await resp.text();
+
+    let data = null;
+
+    try {
+      const xml = new DOMParser().parseFromString(text, 'text/xml');
+      const vehicleDataEl = xml.querySelector('vehicleData');
+      if (vehicleDataEl) {
+        try { data = JSON.parse(vehicleDataEl.textContent); } catch(e) {}
+      }
+      if (!data) {
+        const stringEl = xml.querySelector('string');
+        if (stringEl) {
+          try { data = JSON.parse(stringEl.textContent); } catch(e) {}
+        }
+      }
+      if (!data) {
+        const allText = xml.documentElement ? xml.documentElement.textContent : '';
+        const jsonMatch = allText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          try { data = JSON.parse(jsonMatch[0]); } catch(e) {}
+        }
+      }
+    } catch(e) {}
+
+    if (!data) {
+      try { data = JSON.parse(text); } catch(e) {}
+    }
+
+    if (data && (data.CarMake || data.Description || data.EngineCode || data.EngineSize)) {
+      renderResult(data, raw);
+    } else {
+      showError('Got a response but could not read it. Raw: ' + text.substring(0, 400));
+    }
+
+  } catch(e) {
+    showError('Request failed: ' + e.message);
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Find Engine Code`;
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorBox');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+loadSaved();
+</script>
+</body>
+</html>
